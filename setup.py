@@ -1,3 +1,4 @@
+from os.path import dirname, join
 from setuptools import setup, find_packages
 
 setup(
@@ -10,4 +11,5 @@ setup(
     url='https://numerodix@github.com/numerodix/django-access-log.git',
     download_url='https://numerodix@github.com/numerodix/django-access-log.git',
     license='GPL',
+    install_requires=join(dirname(__file__), 'requirements.txt').read(),
 )
