@@ -1,7 +1,7 @@
 django-access-log
 =============
 
-Simple traffic analysis
+Simple traffic analysis. Parse access.log, inspect your traffic in the admin, discover common/recent error pages.
 
 Requirements
 ------------
@@ -23,9 +23,18 @@ INSTALLED_APPS = (
 )
 ```
 
+Then initialize the database tables:
+
+```
+./manage.py migrate access_log
+```
+
+
 How to use
 ----------
 
 ```
 ./manage.py process_log /path/to/access.log
 ```
+
+Then see the Access_Log app in the admin.
