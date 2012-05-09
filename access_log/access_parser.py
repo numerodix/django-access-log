@@ -30,6 +30,7 @@ rx_logline = re.compile(
     '$'
 )
 
+# [28/Apr/2012:07:24:52 -0400]
 rx_apache_timestamp = re.compile(
     r'^'
     '([0-9]+)'  # day
@@ -45,6 +46,17 @@ rx_apache_timestamp = re.compile(
     '([0-9]+)'  # second
     '\s+'
     '([^\s]+)'  # timezone
+    '$'
+)
+
+# "GET /numerodix/blog/index.php/2007/05/19/painless-website-backup-synchronization/ HTTP/1.1"
+rx_apache_request_string = re.compile(
+    r'(?i)^'
+    '([^\s]+)'  # method
+    '\s+'
+    '(.+)'  # path
+    '\s+'
+    '(HTTP\/[0-9].[0-9])'  # http version
     '$'
 )
 
@@ -81,8 +93,7 @@ def get_datetime(apache_timestamp):
     return dt
 
 def parse_request_string(request_string):
-    method, path, version =\
-            re.findall(r'(?i)^([^\s]+)\s+(.+)\s+(HTTP\/[0-9].[0-9])$', request_string)[0]
+    method, path, version = rx_apache_request_string.findall(request_string)[0]
     return method, path, version
 
 def iter_records(filepath):
