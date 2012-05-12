@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.management.base import AppCommand
+from django.core.management.base import LabelCommand
 from django.db.models import F
 from django.db.models import Sum
 from django.utils.timezone import now
@@ -12,10 +12,11 @@ from access_log.models import HttpError
 from access_log.models import LogMiningEvent
 
 
-class Command(AppCommand):
-    def handle(self, *args, **options):
-        logfile = args[0]
+class Command(LabelCommand):
+    args = "access.log"
+    label = 'log file'
 
+    def handle_label(self, logfile, **options):
         # find the previous execution
         event = None
         try:
@@ -27,19 +28,21 @@ class Command(AppCommand):
 
         days = {}
         lines_read = 0
+        lines_skipped = 0
 
         for i, record in enumerate(iter_records(logfile)):
-            # skip this record if we have seen it before
-            if (event and event.end_timestamp
-                and record.timestamp <= event.end_timestamp):
-                continue
-
-            lines_read += 1
-
             if not start_time:
                 start_time = record.timestamp
             if record.timestamp:
                 end_time = record.timestamp
+
+            # skip this record if we have seen it before
+            if (event and event.end_timestamp
+                and record.timestamp <= event.end_timestamp):
+                lines_skipped += 1
+                continue
+
+            lines_read += 1
 
 
             self.create_error_line(record)
@@ -83,7 +86,8 @@ class Command(AppCommand):
                 end_timestamp=end_time,
             ).save()
 
-        print("Processed %s log records, last was: %s" % (lines_read, end_time))
+        print("Processed %s, skipped %s records, between %s and %s" %
+              (lines_read, lines_skipped, start_time, end_time))
 
     def compute_monthly_traffic(self):
         months = DailyTraffic.objects.dates('timestamp', 'month')
