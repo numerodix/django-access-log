@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.core.management.base import LabelCommand
 from django.db.models import F
 from django.db.models import Sum
@@ -87,7 +88,7 @@ class Command(LabelCommand):
             ).save()
 
         print("Processed %s, skipped %s records, between %s and %s" %
-              (lines_read, lines_skipped, start_time, end_time))
+              (intcomma(lines_read), intcomma(lines_skipped), start_time, end_time))
 
     def compute_monthly_traffic(self):
         months = DailyTraffic.objects.dates('timestamp', 'month')
