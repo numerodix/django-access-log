@@ -32,6 +32,8 @@ class Command(LabelCommand):
         lines_skipped = 0
 
         for i, record in enumerate(iter_records(logfile)):
+            print("Processing record #%s for %s" % (intcomma(i+1), record.timestamp))
+
             if not start_time:
                 start_time = record.timestamp
             if record.timestamp:
