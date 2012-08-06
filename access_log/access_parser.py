@@ -93,7 +93,11 @@ def get_datetime(apache_timestamp):
     return dt
 
 def parse_request_string(request_string):
-    method, path, version = rx_apache_request_string.findall(request_string)[0]
+    method, path, version = '', '', ''
+    try:
+        method, path, version = rx_apache_request_string.findall(request_string)[0]
+    except IndexError:
+        pass
     return method, path, version
 
 def iter_records(filepath):
