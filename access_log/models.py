@@ -29,11 +29,12 @@ class HttpError(models.Model):
     hits = models.PositiveIntegerField(default=1)
     status = models.PositiveIntegerField()
     method = models.CharField(max_length=12)
+    host = models.CharField(max_length=255)
     path = models.CharField(max_length=512)
     referer = models.CharField(max_length=512, blank=True, null=True)
 
     class Meta:
-        unique_together = ['status', 'method', 'path', 'referer']
+        unique_together = ['status', 'method', 'host', 'path', 'referer']
         ordering = ['-last_seen']
 
 
