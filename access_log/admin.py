@@ -19,11 +19,11 @@ class DailyTrafficAdmin(admin.ModelAdmin):
 class HttpErrorAdmin(admin.ModelAdmin):
     date_hierarchy = 'last_seen'
     list_display = ['status', 'last_seen', 'hits', 'method', 'path_link', 'referer_link']
-    list_filter = ['status', 'method']
+    list_filter = ['status', 'method', 'host']
 
     def path_link(self, obj):
         if obj.path:
-            return '<a href="%s">%s</a>' % (obj.path, obj.path)
+            return '<a href="http://%s%s">%s</a>' % (obj.host, obj.path, obj.path)
         return obj.path
     path_link.allow_tags = True
 
