@@ -6,17 +6,17 @@ import sys
 import dateutil.parser
 import dateutil.tz
 
-### Apache Combined Log Format
-# 173.208.43.20 - - [28/Apr/2012:07:24:52 -0400] "GET /numerodix/blog/index.php/2007/05/19/painless-website-backup-synchronization/ HTTP/1.1" 200 28576 "" "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"
+### Apache custom log format
+# LogFormat "%h %t \"%{Host}i\" \"%r\" %>s %b \"%{Referer}i\" \"%{User-agent}i\""
+# example line:
+# 173.208.43.20 [28/Apr/2012:07:24:52 -0400] "www.matusiak.eu" "GET /numerodix/blog/index.php/2007/05/19/painless-website-backup-synchronization/ HTTP/1.1" 200 28576 "" "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)"
 rx_logline = re.compile(
     r'^'
     '([^\s]+)'  # ip
     '\s+'
-    '([^\s]+)'  # ident / -
-    '\s+'
-    '([^\s]+)'  # REMOTE_USER / -
-    '\s+'
     '[[](.*?)[]]'  # timestamp
+    '\s+'
+    '"(.*?)"'  # host
     '\s+'
     '"(.*?)"'  # request string
     '\s+'
@@ -65,7 +65,7 @@ UTC_ZONE = dateutil.tz.gettz('UTC')
 
 class LogRecord(object):
     _atts = [
-        'ip', 'ident', 'remote_user', 'timestamp',
+        'ip', 'timestamp', 'host',
         'method', 'path', 'version', 'status', 'length',
         'referer', 'user_agent'
     ]
@@ -104,11 +104,9 @@ def iter_records(filepath):
     for line in open(filepath):
         line = line.strip()
 
-        ip, ident, remote_user, timestamp, request,\
+        ip, timestamp, host, request,\
                 status, length, referer, user_agent = rx_logline.findall(line)[0]
 
-        ident = ident != '-' and ident or None
-        remote_user = remote_user != '-' and remote_user or None
         timestamp = get_datetime(timestamp)
         method, path, version = parse_request_string(request)
         status = status and int(status)
@@ -118,9 +116,8 @@ def iter_records(filepath):
 
         record = LogRecord(
             ip=ip,
-            ident=ident,
-            remote_user=remote_user,
             timestamp=timestamp,
+            host=host,
             method=method,
             path=path,
             version=version,
