@@ -117,6 +117,7 @@ class Command(LabelCommand):
             error_line, created = HttpError.objects.get_or_create(
                 status=record.status,
                 method=record.method,
+                host=record.host and record.host[:255],
                 path=record.path and record.path[:512],
                 referer=record.referer and record.referer[:512],
             )
