@@ -18,6 +18,8 @@ class Command(LabelCommand):
     label = 'log file'
 
     def handle_label(self, logfile, **options):
+        max_read_lines = int(options.get('max_read_lines') or 50000)
+
         # find the previous execution
         event = None
         try:
@@ -32,8 +34,6 @@ class Command(LabelCommand):
         lines_skipped = 0
 
         for i, record in enumerate(iter_records(logfile)):
-            print("Processing record #%s for %s" % (intcomma(i+1), record.timestamp))
-
             if not start_time:
                 start_time = record.timestamp
             if record.timestamp:
@@ -42,10 +42,17 @@ class Command(LabelCommand):
             # skip this record if we have seen it before
             if (event and event.end_timestamp
                 and record.timestamp <= event.end_timestamp):
+                print("Skipping record #%s for %s" % (intcomma(i+1), record.timestamp))
                 lines_skipped += 1
                 continue
 
+            # break if the limit has been reached
+            if lines_read >= max_read_lines:
+                print("Reached limit of %s lines" % max_read_lines)
+                break
+
             lines_read += 1
+            print("Processing record #%s for %s" % (intcomma(i+1), record.timestamp))
 
 
             self.create_error_line(record)
