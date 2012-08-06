@@ -35,13 +35,14 @@ class Migration(SchemaMigration):
             ('hits', self.gf('django.db.models.fields.PositiveIntegerField')(default=1)),
             ('status', self.gf('django.db.models.fields.PositiveIntegerField')()),
             ('method', self.gf('django.db.models.fields.CharField')(max_length=12)),
+            ('host', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('path', self.gf('django.db.models.fields.CharField')(max_length=512)),
             ('referer', self.gf('django.db.models.fields.CharField')(max_length=512, null=True, blank=True)),
         ))
         db.send_create_signal('access_log', ['HttpError'])
 
-        # Adding unique constraint on 'HttpError', fields ['status', 'method', 'path', 'referer']
-        db.create_unique('access_log_httperror', ['status', 'method', 'path', 'referer'])
+        # Adding unique constraint on 'HttpError', fields ['status', 'method', 'host', 'path', 'referer']
+        db.create_unique('access_log_httperror', ['status', 'method', 'host', 'path', 'referer'])
 
         # Adding model 'LogMiningEvent'
         db.create_table('access_log_logminingevent', (
@@ -53,9 +54,10 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('access_log', ['LogMiningEvent'])
 
+
     def backwards(self, orm):
-        # Removing unique constraint on 'HttpError', fields ['status', 'method', 'path', 'referer']
-        db.delete_unique('access_log_httperror', ['status', 'method', 'path', 'referer'])
+        # Removing unique constraint on 'HttpError', fields ['status', 'method', 'host', 'path', 'referer']
+        db.delete_unique('access_log_httperror', ['status', 'method', 'host', 'path', 'referer'])
 
         # Deleting model 'DailyTraffic'
         db.delete_table('access_log_dailytraffic')
@@ -69,6 +71,7 @@ class Migration(SchemaMigration):
         # Deleting model 'LogMiningEvent'
         db.delete_table('access_log_logminingevent')
 
+
     models = {
         'access_log.dailytraffic': {
             'Meta': {'ordering': "['-timestamp']", 'object_name': 'DailyTraffic'},
@@ -79,8 +82,9 @@ class Migration(SchemaMigration):
             'timestamp': ('django.db.models.fields.DateTimeField', [], {})
         },
         'access_log.httperror': {
-            'Meta': {'ordering': "['-last_seen']", 'unique_together': "(['status', 'method', 'path', 'referer'],)", 'object_name': 'HttpError'},
+            'Meta': {'ordering': "['-last_seen']", 'unique_together': "(['status', 'method', 'host', 'path', 'referer'],)", 'object_name': 'HttpError'},
             'hits': ('django.db.models.fields.PositiveIntegerField', [], {'default': '1'}),
+            'host': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_seen': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'method': ('django.db.models.fields.CharField', [], {'max_length': '12'}),
