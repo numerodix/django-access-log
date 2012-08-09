@@ -108,6 +108,7 @@ def iter_records(filepath):
                 status, length, referer, user_agent = rx_logline.findall(line)[0]
 
         timestamp = get_datetime(timestamp)
+        host = host != '-' and host or None
         method, path, version = parse_request_string(request)
         status = status and int(status)
         length = length != '-' and int(length) or 0

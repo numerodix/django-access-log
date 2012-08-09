@@ -29,7 +29,7 @@ class HttpError(models.Model):
     hits = models.PositiveIntegerField(default=1)
     status = models.PositiveIntegerField()
     method = models.CharField(max_length=12)
-    host = models.CharField(max_length=255)
+    host = models.CharField(max_length=255, blank=True, null=True)
     path = models.CharField(max_length=512)
     referer = models.CharField(max_length=512, blank=True, null=True)
 

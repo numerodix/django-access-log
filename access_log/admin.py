@@ -23,7 +23,8 @@ class HttpErrorAdmin(admin.ModelAdmin):
 
     def url_link(self, obj):
         if obj.path:
-            url = 'http://%s%s' % (obj.host, obj.path)
+            host_path = obj.host and 'http://%s' % obj.host or ''
+            url = '%s%s' % (host_path, obj.path)
             return '<a href="%s">%s</a>' % (url, url)
         return obj.path
     url_link.allow_tags = True
