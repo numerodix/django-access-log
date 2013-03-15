@@ -63,7 +63,7 @@ class Command(LabelCommand):
             if not dt in days:
                 days[dt] = {
                     'timestamp': dt,
-                    'hits': 1,
+                    'hits': 0,
                     'errors': 0,
                     'bandwidth': 0,
                 }
