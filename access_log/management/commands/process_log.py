@@ -4,6 +4,7 @@ from django.core.management.base import LabelCommand
 from django.db.models import F
 from django.db.models import Sum
 from django.utils.timezone import now
+from optparse import make_option
 
 from access_log.access_parser import iter_records
 
@@ -16,9 +17,13 @@ from access_log.models import LogMiningEvent
 class Command(LabelCommand):
     args = "access.log"
     label = 'log file'
+    option_list = LabelCommand.option_list + (
+        make_option('--max_read_lines', dest='max_read_lines', default=50000,
+                    help="Max read lines from access log file."),
+    )
 
     def handle_label(self, logfile, **options):
-        max_read_lines = int(options.get('max_read_lines') or 50000)
+        max_read_lines = int(options.get('max_read_lines'))
 
         # find the previous execution
         event = None
