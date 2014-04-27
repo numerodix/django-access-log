@@ -1,5 +1,8 @@
-from os.path import dirname, join
-from setuptools import setup, find_packages
+from os.path import dirname
+from os.path import join
+from setuptools import find_packages
+from setuptools import setup
+
 
 setup(
     name='django-access-log',
@@ -8,8 +11,8 @@ setup(
     long_description=open('README.md').read(),
     author='Martin Matusiak',
     author_email='numerodix@gmail.com',
-    url='https://numerodix@github.com/numerodix/django-access-log.git',
-    download_url='https://numerodix@github.com/numerodix/django-access-log.git',
+    url='https://github.com/numerodix/django-access-log',
+    download_url='https://github.com/numerodix/django-access-log',
     license='GPL',
     install_requires=open(join(dirname(__file__), 'requirements.txt')).read(),
 )
